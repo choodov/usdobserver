@@ -7,9 +7,12 @@
 }
 
 .usdobserver-chart {
-
+    text-align: center;
 }
 
-.rates-table-css {
-    width: 60%;
+.usdobserver-table {
+    margin-top: 2%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
 }
