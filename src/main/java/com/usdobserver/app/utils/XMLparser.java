@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ public class XMLParser {
 
 	private USDRate getNewUSDRate(Element exchangeRatesTable) {
 		USDRate usdRate = new USDRate();
-		usdRate.setDate(LocalDate.parse(exchangeRatesTable.getElementsByTag(EFFECTIVE_DATE).text()));
+		usdRate.setDate(exchangeRatesTable.getElementsByTag(EFFECTIVE_DATE).text());
 
 		exchangeRatesTable.select(RATES_TO_RATE).stream()
 				.filter(element -> element.select(CODE).text().equals(USD))

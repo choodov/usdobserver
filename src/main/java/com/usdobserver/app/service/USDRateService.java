@@ -1,8 +1,8 @@
 package com.usdobserver.app.service;
 
 import com.usdobserver.app.entity.USDRate;
+import com.usdobserver.app.web.dto.DataTablesSettingsDTO;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -12,5 +12,9 @@ public interface USDRateService {
 
 	List<USDRate> getAllRates();
 
-	void updateDBFromAPI(LocalDate startDate, LocalDate endDate);
+	void updateDBFromAPI(String startDate, String endDate);
+
+	Long countTotalRates();
+
+	List<USDRate> getRatesPage(DataTablesSettingsDTO settings);
 }

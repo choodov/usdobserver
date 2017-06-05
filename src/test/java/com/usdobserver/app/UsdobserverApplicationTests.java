@@ -37,7 +37,7 @@ public class UsdobserverApplicationTests {
 	@Test
 	public void dbTest() {
 		USDRate rate = new USDRate();
-		rate.setDate(LocalDate.parse("2017-06-05"));
+		rate.setDate("2017-06-05");
 		rate.setRate(3.9995D);
 		usdRateRepository.saveAndFlush(rate);
 
@@ -62,7 +62,7 @@ public class UsdobserverApplicationTests {
 
 	@Test
 	public void updateDBFromAPITest(){
-		usdRateService.updateDBFromAPI(LocalDate.parse("2017-06-01"), LocalDate.parse("2017-06-05"));
+		usdRateService.updateDBFromAPI("2017-06-01", "2017-06-05");
 		List<USDRate> usdRateList = usdRateService.getAllRates();
 		assertThat(usdRateList.size(), is(3));
 	}

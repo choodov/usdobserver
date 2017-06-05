@@ -4,12 +4,14 @@ import com.usdobserver.app.entity.USDRate;
 import com.usdobserver.app.repository.USDRateRepository;
 import com.usdobserver.app.utils.APIConnector;
 import com.usdobserver.app.utils.XMLParser;
+import com.usdobserver.app.web.dto.DataTablesSettingsDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +36,7 @@ public class USDRateServiceImpl implements USDRateService {
 	}
 
 	@Override
-	public void updateDBFromAPI(LocalDate startDate, LocalDate endDate) {
+	public void updateDBFromAPI(String startDate, String endDate) {
 		logger.info("NBP API dates range: From " + startDate + " to " + endDate);
 
 		String NBPURL = apiConnector.constructNBPURL(startDate, endDate);
@@ -47,5 +49,32 @@ public class USDRateServiceImpl implements USDRateService {
 			usdRateRepository.flush();
 			logger.info("List of saved USDRates: " + savedUSDRateList);
 		}
+	}
+
+	@Override
+	public Long countTotalRates() {
+		return usdRateRepository.count();
+	}
+
+	@Override
+	public List<USDRate> getRatesPage(DataTablesSettingsDTO settings) {
+		Integer startFrom = settings.getIDisplayStart();
+		Integer productsOnPage = settings.getIDisplayLength();
+
+		Sort sort = null;
+		for (DataTablesSettingsDTO.SortSettings sortSettings : settings.getSortSettings()) {
+			if (sort == null) {
+				sort = new Sort(new Sort.Order(sortSettings.getSSortDir(), sortSettings.getMDataProp()));
+			} else {
+				sort = sort.and(new Sort(new Sort.Order(sortSettings.getSSortDir(), sortSettings.getMDataProp())));
+			}
+		}
+
+		PageRequest pageRequest = new PageRequest(startFrom / productsOnPage, productsOnPage, sort);
+
+		if (settings.getSSearch() == null || settings.getSSearch().isEmpty()) {
+			return usdRateRepository.findAll(pageRequest).getContent();
+		}
+		return usdRateRepository.findByDateContaining(settings.getSSearch(), pageRequest).getContent();
 	}
 }

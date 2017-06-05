@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.time.LocalDate;
-
 /**
  * Created by Chudov A.V. on 6/5/2017.
  */
@@ -22,7 +20,7 @@ public class MainController {
 
 	@GetMapping("/")
 	public String mainPage() {
-		usdRateService.updateDBFromAPI(LocalDate.parse("2017-06-01"), LocalDate.parse("2017-06-02"));
+		usdRateService.updateDBFromAPI("2017-05-01", "2017-06-02");
 		return "index";
 	}
 

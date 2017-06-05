@@ -3,8 +3,47 @@
 <head>
     <meta charset="UTF-8"></meta>
     <title>USDObserver</title>
+    <link rel="stylesheet" href="css/jquery-ui.min.css"/>
+    <link rel="stylesheet" href="css/jquery.dataTables.css"/>
+    <link rel="stylesheet" href="css/usdobserver.css"/>
 </head>
 <body>
-Hello USD Observer!
+
+<div class="usdobserver">
+    <div class="usdobserver-header">
+        <p>
+            <button id="download-rates">Download exchange rates</button>
+            <button id="download-excel">Download Excel</button>
+        </p>
+
+        <p>Date from: <input type="text" name="date-from" id="date-from"/>
+            to: <input type="text" name="date-to" id="date-to"/></p>
+    </div>
+    <div class="usdobserver-chart">
+
+    </div>
+    <div class="usdobserver-table">
+        <table id="rates-table" class="cell-border hover " cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th><b>Date</b></th>
+                <th><b>Exchange rate</b></th>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <th><b>Date</b></th>
+                <th><b>Exchange rate</b></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<script src="js/external/jquery/jquery.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/jquery.dataTables.min.js"></script>
+<script src="js/usdobserver.js"></script>
+
 </body>
 </html>

@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +59,7 @@ public class APIConnector {
 		return body;
 	}
 
-	public String constructNBPURL(LocalDate startDate, LocalDate endDate) {
+	public String constructNBPURL(String startDate, String endDate) {
 		String nbpurl = BASE_NBP_URL + startDate + URL_SEPARATOR + endDate + END_NBP_URL;
 		logger.info("NBP URL constructed: " + nbpurl);
 		return nbpurl;
