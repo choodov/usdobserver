@@ -60,4 +60,11 @@ public class UsdobserverApplicationTests {
 		assertThat(badResponseFromADI, is(Optional.empty()));
 	}
 
+	@Test
+	public void updateDBFromAPITest(){
+		usdRateService.updateDBFromAPI(LocalDate.parse("2017-06-01"), LocalDate.parse("2017-06-05"));
+		List<USDRate> usdRateList = usdRateService.getAllRates();
+		assertThat(usdRateList.size(), is(3));
+	}
+
 }

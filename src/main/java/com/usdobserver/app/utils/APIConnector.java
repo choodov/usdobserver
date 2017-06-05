@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +22,9 @@ public class APIConnector {
 	private Logger logger = LoggerFactory.getLogger(APIConnector.class);
 
 	private static final int STATUS_OK = 200;
+	private static final String BASE_NBP_URL = "http://api.nbp.pl/api/exchangerates/tables/A/";
+	private static final String END_NBP_URL = "/?format=xml";
+	private static final String URL_SEPARATOR = "/";
 	private OkHttpClient client = new OkHttpClient();
 
 	public Optional<String> getResponseFromAPI(String URL) {
@@ -30,6 +35,7 @@ public class APIConnector {
 		Request request = new Request.Builder().url(URL).get().build();
 
 		try {
+			logger.info("Date and time of NBP API call: " + LocalDateTime.now());
 			startTime = System.nanoTime();
 			response = client.newCall(request).execute();
 			endTime = System.nanoTime();
@@ -52,6 +58,12 @@ public class APIConnector {
 		}
 
 		return body;
+	}
+
+	public String constructNBPURL(LocalDate startDate, LocalDate endDate) {
+		String nbpurl = BASE_NBP_URL + startDate + URL_SEPARATOR + endDate + END_NBP_URL;
+		logger.info("NBP URL constructed: " + nbpurl);
+		return nbpurl;
 	}
 
 }
