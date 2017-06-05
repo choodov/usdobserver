@@ -2,6 +2,7 @@ package com.usdobserver.app.service;
 
 import com.usdobserver.app.entity.USDRate;
 import com.usdobserver.app.repository.USDRateRepository;
+import com.usdobserver.app.utils.APIConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,8 @@ public class USDRateServiceImpl implements USDRateService {
 
 	@Autowired
 	private USDRateRepository usdRateRepository;
+	@Autowired
+	private APIConnector apiConnector;
 
 	@Override
 	public List<USDRate> getAllRates() {

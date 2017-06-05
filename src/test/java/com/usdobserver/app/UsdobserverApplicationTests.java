@@ -3,7 +3,7 @@ package com.usdobserver.app;
 import com.usdobserver.app.entity.USDRate;
 import com.usdobserver.app.repository.USDRateRepository;
 import com.usdobserver.app.service.USDRateService;
-import org.junit.Before;
+import com.usdobserver.app.utils.APIConnector;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,34 +12,52 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class UsdobserverApplicationTests {
 
-	@Autowired	private USDRateRepository usdRateRepository;
-	@Autowired	private USDRateService usdRateService;
+	@Autowired
+	private USDRateRepository usdRateRepository;
+	@Autowired
+	private USDRateService usdRateService;
+	@Autowired
+	private APIConnector apiConnector;
 
-	@Before
-	public void dbInit() {
+	private static final String TEST_URL
+			= "http://api.nbp.pl/api/exchangerates/tables/A/2017-06-01/2017-06-01/?format=xml";
+	private static final String BAD_TEST_URL
+			= "http://badapi.nbp.pl/api/exchangerates/tables/A/2017-06-01/2017-06-01/?format=xml";
+
+	@Test
+	public void dbTest() {
 		USDRate rate = new USDRate();
 		rate.setDate(LocalDate.parse("2017-06-05"));
 		rate.setRate(3.9995D);
 		usdRateRepository.saveAndFlush(rate);
-	}
 
-	@Test
-	public void dbTest() {
 		List<USDRate> usdRateList = usdRateService.getAllRates();
 		System.out.println("USD rate list: " + usdRateList);
-		assertEquals(1, usdRateList.size());
+		assertThat(usdRateList.size(), is(1));
 
 		usdRateRepository.delete(usdRateList);
 		List<USDRate> emptyUsdRateList = usdRateService.getAllRates();
-		System.out.println("Empty USD rate list: " + emptyUsdRateList);
-		assertEquals(1, usdRateList.size());
+		assertThat(emptyUsdRateList.size(), is(0));
+	}
+
+	@Test
+	public void APIConnectionTest() {
+		Optional<String> responseFromADI = apiConnector.getResponseFromAPI(TEST_URL);
+		System.out.println("Response from http://api.nbp.pl: " + responseFromADI);
+		assertThat(responseFromADI, notNullValue());
+
+		Optional<String> badResponseFromADI = apiConnector.getResponseFromAPI(BAD_TEST_URL);
+		assertThat(badResponseFromADI, is(Optional.empty()));
 	}
 
 }
