@@ -30,7 +30,8 @@ public class RESTController {
 	@Autowired
 	private XLSGenerator xlsGenerator;
 
-	private static final String XLSX_MEDIA_TYPE = "application/vnd.ms-excel";
+	private static final String XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	private static final String FILE_NAME_XLSX = "USDRates.xlsx";
 
 	@RequestMapping(value = "/getAjax", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseEntity<DataTablesRenderDTO> getRates(DataTablesSettingsDTO settings, HttpServletRequest request) {
@@ -48,12 +49,13 @@ public class RESTController {
 		return new ResponseEntity<>(renderDTO, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/getExcel", method = RequestMethod.POST)
+	@RequestMapping(value = "/getExcel", method = RequestMethod.POST, produces = XLSX_MEDIA_TYPE)
 	public ResponseEntity<byte[]> getExcel(@RequestBody String tableData) {
 		byte[] xlsFile = xlsGenerator.generateXLS(tableData);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.parseMediaType(XLSX_MEDIA_TYPE));
+		headers.setContentDispositionFormData(FILE_NAME_XLSX, FILE_NAME_XLSX);
 
 		return new ResponseEntity<>(xlsFile, headers, HttpStatus.OK);
 	}

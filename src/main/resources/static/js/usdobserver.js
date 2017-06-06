@@ -75,7 +75,7 @@ $(document).ready(function () {
     });
 
     function saveXLS(byte) {
-        var file = new Blob([byte], {type: "application/vnd.ms-excel"});
+        var file = new Blob([byte], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
         var link = document.createElement('a');
         var myURL = window.URL || window.webkitURL
         link.href = myURL.createObjectURL(file);
