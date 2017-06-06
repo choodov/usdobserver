@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -28,7 +27,7 @@ public class XLSGenerator {
 	private static final int FIRST_COLUMN = 0;
 	private static final int SECOND_COLUMN = 1;
 
-	public byte[] generateXLS(String inputJSON) {
+	public String generateXLS(String inputJSON) {
 
 		logger.info("TABLE DATA: " + inputJSON);
 
@@ -61,16 +60,7 @@ public class XLSGenerator {
 			e.printStackTrace();
 		}
 
-		// Write the output to byte[]
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		try {
-			workbook.write(bos);
-			bos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return bos.toByteArray();
+		return FILE_NAME_XLSX;
 	}
 
 	private USDRate[] parseJSON(String inputJSON) {

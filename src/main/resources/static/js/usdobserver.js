@@ -10,6 +10,8 @@ $(document).ready(function () {
 
     var table = $('#rates-table').dataTable({
         "autoWidth": false,
+        "order": [[ 0, "desc" ]],
+        "lengthMenu": [[10, 25, 50, 100, 1000], [10, 25, 50, 100, "All"]],
         columns: [
             {"data": "date"},
             {"data": "rate"}
@@ -63,26 +65,16 @@ $(document).ready(function () {
     $('#download-excel').on('click', function () {
         $.ajax({
             type: "POST",
-            url: "/api/rates/getExcel",
+            url: "/api/rates/generateExcel",
             cache: false,
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(table.fnGetData()),
             complete: function (Data) {
-                saveXLS(Data);
+                window.open("/api/rates/getExcel?fileName=" + Data.responseText, '_blank');
             }
         });
     });
-
-    function saveXLS(byte) {
-        var file = new Blob([byte], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-        var link = document.createElement('a');
-        var myURL = window.URL || window.webkitURL
-        link.href = myURL.createObjectURL(file);
-        var fileName = "USD_rates.xls";
-        link.download = fileName;
-        link.click();
-    }
 
     $('#download-rates').on('click', function () {
         alert("downloading rates...")

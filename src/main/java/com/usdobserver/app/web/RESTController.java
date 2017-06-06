@@ -10,12 +10,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Created by Chudov A.V. on 6/5/2017.
@@ -31,7 +31,6 @@ public class RESTController {
 	private XLSGenerator xlsGenerator;
 
 	private static final String XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-	private static final String FILE_NAME_XLSX = "USDRates.xlsx";
 
 	@RequestMapping(value = "/getAjax", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseEntity<DataTablesRenderDTO> getRates(DataTablesSettingsDTO settings, HttpServletRequest request) {
@@ -49,14 +48,24 @@ public class RESTController {
 		return new ResponseEntity<>(renderDTO, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/getExcel", method = RequestMethod.POST, produces = XLSX_MEDIA_TYPE)
-	public ResponseEntity<byte[]> getExcel(@RequestBody String tableData) {
-		byte[] xlsFile = xlsGenerator.generateXLS(tableData);
+	@RequestMapping(value = "/generateExcel", method = RequestMethod.POST)
+	public String generateExcel(@RequestBody String tableData) {
+		return xlsGenerator.generateXLS(tableData);
+	}
+
+	@RequestMapping(value = "/getExcel", method = RequestMethod.GET, produces = XLSX_MEDIA_TYPE)
+	public ResponseEntity<byte[]> getExcel(@RequestParam("fileName") String fileName) {
+		byte[] data = new byte[]{};
+		try {
+			data = Files.readAllBytes(Paths.get(fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.parseMediaType(XLSX_MEDIA_TYPE));
-		headers.setContentDispositionFormData(FILE_NAME_XLSX, FILE_NAME_XLSX);
+		headers.setContentDispositionFormData(fileName, fileName);
 
-		return new ResponseEntity<>(xlsFile, headers, HttpStatus.OK);
+		return new ResponseEntity<>(data, headers, HttpStatus.OK);
 	}
 }
