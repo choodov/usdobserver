@@ -52,7 +52,7 @@ $(document).ready(function () {
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero:true
+                        beginAtZero: true
                     }
                 }]
             },
@@ -60,4 +60,31 @@ $(document).ready(function () {
         }
     });
 
+    $('#download-excel').on('click', function () {
+        $.ajax({
+            type: "POST",
+            url: "/api/rates/getExcel",
+            cache: false,
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(table.fnGetData()),
+            complete: function (Data) {
+                saveXLS(Data);
+            }
+        });
+    });
+
+    function saveXLS(byte) {
+        var file = new Blob([byte], {type: "application/vnd.ms-excel"});
+        var link = document.createElement('a');
+        var myURL = window.URL || window.webkitURL
+        link.href = myURL.createObjectURL(file);
+        var fileName = "USD_rates.xls";
+        link.download = fileName;
+        link.click();
+    }
+
+    $('#download-rates').on('click', function () {
+        alert("downloading rates...")
+    });
 });

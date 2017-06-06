@@ -2,12 +2,15 @@ package com.usdobserver.app.web;
 
 import com.usdobserver.app.entity.USDRate;
 import com.usdobserver.app.service.USDRateService;
+import com.usdobserver.app.utils.XLSGenerator;
 import com.usdobserver.app.web.dto.DataTablesRenderDTO;
 import com.usdobserver.app.web.dto.DataTablesSettingsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +27,11 @@ public class RESTController {
 	@Autowired
 	private USDRateService usdRateService;
 
+	@Autowired
+	private XLSGenerator xlsGenerator;
+
+	private static final String XLSX_MEDIA_TYPE = "application/vnd.ms-excel";
+
 	@RequestMapping(value = "/getAjax", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseEntity<DataTablesRenderDTO> getRates(DataTablesSettingsDTO settings, HttpServletRequest request) {
 
@@ -38,5 +46,15 @@ public class RESTController {
 		renderDTO.setAaData(usdRateService.getRatesPage(settings));
 
 		return new ResponseEntity<>(renderDTO, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/getExcel", method = RequestMethod.POST)
+	public ResponseEntity<byte[]> getExcel(@RequestBody String tableData) {
+		byte[] xlsFile = xlsGenerator.generateXLS(tableData);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.parseMediaType(XLSX_MEDIA_TYPE));
+
+		return new ResponseEntity<>(xlsFile, headers, HttpStatus.OK);
 	}
 }
