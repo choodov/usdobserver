@@ -12,12 +12,16 @@ $(document).ready(function () {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     $("#date-from").datepicker({
+        changeMonth: true,
+        changeYear: true,
         maxDate: '-2',
         inline: true,
         dateFormat: "yy-mm-dd"
     }).datepicker("setDate", oneWeekAgo);
 
     $("#date-to").datepicker({
+        changeMonth: true,
+        changeYear: true,
         maxDate: '-1',
         minDate: $("#date-from").val(),
         inline: true,
