@@ -20,7 +20,6 @@ public class MainController {
 
 	@GetMapping("/")
 	public String mainPage() {
-		usdRateService.updateDBFromAPI("2017-05-01", "2017-06-02");
 		return "index";
 	}
 
