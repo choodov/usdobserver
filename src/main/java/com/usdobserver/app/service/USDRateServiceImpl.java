@@ -59,12 +59,12 @@ public class USDRateServiceImpl implements USDRateService {
 	}
 
 	@Override
-	public Long countTotalRates() {
-		return usdRateRepository.count();
+	public Long countTotalRates(String dateFrom, String dateTo) {
+		return usdRateRepository.countByDateGreaterThanEqualAndDateLessThanEqual(dateFrom, dateTo);
 	}
 
 	@Override
-	public List<USDRate> getRatesPage(DataTablesSettingsDTO settings) {
+	public List<USDRate> getRatesPage(DataTablesSettingsDTO settings, String dateFrom, String dateTo) {
 		Integer startFrom = settings.getIDisplayStart();
 		Integer productsOnPage = settings.getIDisplayLength();
 
@@ -80,7 +80,7 @@ public class USDRateServiceImpl implements USDRateService {
 		PageRequest pageRequest = new PageRequest(startFrom / productsOnPage, productsOnPage, sort);
 
 		if (settings.getSSearch() == null || settings.getSSearch().isEmpty()) {
-			return usdRateRepository.findAll(pageRequest).getContent();
+			return usdRateRepository.findByDateGreaterThanEqualAndDateLessThanEqual(dateFrom, dateTo, pageRequest).getContent();
 		}
 		return usdRateRepository.findByDateContaining(settings.getSSearch(), pageRequest).getContent();
 	}

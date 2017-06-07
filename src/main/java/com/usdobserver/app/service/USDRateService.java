@@ -16,7 +16,7 @@ public interface USDRateService {
 
 	boolean updateDBFromAPI(String startDate, String endDate);
 
-	Long countTotalRates();
+	Long countTotalRates(String dateFrom, String dateTo);
 
-	List<USDRate> getRatesPage(DataTablesSettingsDTO settings);
+	List<USDRate> getRatesPage(DataTablesSettingsDTO settings, String dateFrom, String dateTo);
 }

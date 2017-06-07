@@ -34,18 +34,20 @@ public class RESTController {
 	private static final String XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 	private static final String PRODUCERS_JSON = "application/json";
 
-	@RequestMapping(value = "/getAjax", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-	public ResponseEntity<DataTablesRenderDTO> getRates(DataTablesSettingsDTO settings, HttpServletRequest request) {
+	@RequestMapping(value = "/updateTable", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	public ResponseEntity<DataTablesRenderDTO> updateTable(@RequestParam("from") String dateFrom,
+														   @RequestParam("to") String dateTo,
+														   DataTablesSettingsDTO settings, HttpServletRequest request) {
 
 		settings.populateColumnData(request);
 
-		Integer totalHeadings = Math.toIntExact(usdRateService.countTotalRates());
+		Integer totalHeadings = Math.toIntExact(usdRateService.countTotalRates(dateFrom, dateTo));
 
 		DataTablesRenderDTO<USDRate> renderDTO = new DataTablesRenderDTO<>();
 		renderDTO.setSEcho(settings.getSEcho());
 		renderDTO.setITotalRecords(totalHeadings);
 		renderDTO.setITotalDisplayRecords(totalHeadings);
-		renderDTO.setAaData(usdRateService.getRatesPage(settings));
+		renderDTO.setAaData(usdRateService.getRatesPage(settings, dateFrom, dateTo));
 
 		return new ResponseEntity<>(renderDTO, HttpStatus.OK);
 	}

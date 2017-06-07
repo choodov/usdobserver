@@ -4,6 +4,7 @@
 
 var ratesChart;
 var table;
+var ratesCounter = 0;
 
 $(document).ready(function () {
 
@@ -21,23 +22,6 @@ $(document).ready(function () {
         inline: true,
         dateFormat: "yy-mm-dd"
     }).datepicker("setDate", new Date());
-
-    var dateFrom = getDateFrom();
-    var dateTo = getDateTo();
-
-    table = $('#rates-table').dataTable({
-        "autoWidth": false,
-        "order": [[ 0, "desc" ]],
-        "lengthMenu": [[10, 25, 50, 100, 1000], [10, 25, 50, 100, "All"]],
-        columns: [
-            {"data": "date"},
-            {"data": "rate"}
-        ],
-        "bProcessing": true,
-        bServerSide: true,
-        sAjaxSource: "/api/rates/getAjax",
-        sServerMethod: "POST"
-    });
 
     var ctx = document.getElementById("rates-chart").getContext('2d');
     ratesChart = new Chart(ctx, {
@@ -96,19 +80,19 @@ $(document).ready(function () {
         updateDB(getDateFrom(), getDateTo());
     });
 
-    $("#date-from, #date-to").on('change', function(){
+    $("#date-from, #date-to").on('change', function () {
         updateChart(getDateFrom(), getDateTo());
+        updateTable(getDateFrom(), getDateTo());
     });
 
-    updateDB(dateFrom, dateTo);
-    updateChart(dateFrom, dateTo);
+    updateDB(getDateFrom(), getDateTo());
 });
 
-function getDateFrom(){
+function getDateFrom() {
     return $("#date-from").val();
 }
 
-function getDateTo(){
+function getDateTo() {
     return $("#date-to").val();
 }
 
@@ -128,10 +112,12 @@ function updateChart(dateFrom, dateTo) {
     var JsonData = getRatesByPeriod(dateFrom, dateTo);
     var newChartData = [];
     var newChartLabels = [];
+    ratesCounter = 0;
 
     $.each(JSON.parse(JsonData), function (index, data) {
         newChartLabels.push(data.date);
         newChartData.push(data.rate);
+        ratesCounter = ratesCounter + 1;
     });
 
     ratesChart.config.data.labels = newChartLabels;
@@ -139,6 +125,24 @@ function updateChart(dateFrom, dateTo) {
     ratesChart.update();
 }
 function updateTable(dateFrom, dateTo) {
+    if(table != null) {
+        table.fnDestroy();
+    }
+
+    table = $('#rates-table').dataTable({
+        retrieve: true,
+        "autoWidth": false,
+        "order": [[0, "desc"]],
+        "lengthMenu": [[10, 25, 50, 100, ratesCounter], [10, 25, 50, 100, "All"]],
+        columns: [
+            {"data": "date"},
+            {"data": "rate"}
+        ],
+        "bProcessing": true,
+        bServerSide: true,
+        sAjaxSource: "/api/rates/updateTable?from=" + dateFrom + "&to=" + dateTo,
+        sServerMethod: "POST"
+    });
 }
 
 function updateDB(dateFrom, dateTo) {

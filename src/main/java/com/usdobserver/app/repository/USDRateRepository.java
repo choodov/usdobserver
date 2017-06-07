@@ -13,4 +13,7 @@ import java.util.List;
 public interface USDRateRepository extends JpaRepository<USDRate,Long> {
 	Page<USDRate> findByDateContaining(String search, Pageable pageable);
 	List<USDRate> findByDateGreaterThanEqualAndDateLessThanEqual(String dateFrom, String dateTo);
+	Page<USDRate> findByDateGreaterThanEqualAndDateLessThanEqual(String dateFrom, String dateTo, Pageable pageable);
+	long countByDateGreaterThanEqualAndDateLessThanEqual(String dateFrom, String dateTo);
+
 }
