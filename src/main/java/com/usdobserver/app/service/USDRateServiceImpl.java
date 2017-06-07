@@ -12,6 +12,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +33,9 @@ public class USDRateServiceImpl implements USDRateService {
 
 	private Logger logger = LoggerFactory.getLogger(USDRateServiceImpl.class);
 
+	private static final java.lang.String DATE_FORMATTER = "yyyy-MM-dd";
+	private static final long MAX_DURATION = 93;
+
 	@Override
 	public List<USDRate> getAllRates() {
 		return usdRateRepository.findAll();
@@ -44,6 +50,34 @@ public class USDRateServiceImpl implements USDRateService {
 	public boolean updateDBFromAPI(String startDate, String endDate) {
 		logger.info("NBP API dates range: From " + startDate + " to " + endDate);
 
+		long datesDuration = calculateDatesDuration(startDate, endDate);
+
+		if (datesDuration <= MAX_DURATION) {
+			return updateDB(startDate, endDate);
+		} else {
+			String newEndDate;
+			do {
+				datesDuration = datesDuration - MAX_DURATION;
+				newEndDate = increaseDateTo(endDate, MAX_DURATION);
+				if (datesDuration > MAX_DURATION) {
+					updateDB(newEndDate, endDate);
+				} else {
+					updateDB(startDate, newEndDate);
+				}
+				endDate = newEndDate;
+			} while (datesDuration > MAX_DURATION);
+
+			return true;
+		}
+	}
+
+	private String increaseDateTo(String date, long duration) {
+		LocalDate newDate = LocalDate.parse(date);
+		newDate = newDate.minusDays(duration);
+		return newDate.format(DateTimeFormatter.ofPattern(DATE_FORMATTER));
+	}
+
+	private boolean updateDB(String startDate, String endDate) {
 		String NBPURL = apiConnector.constructNBPURL(startDate, endDate);
 		Optional<String> response = apiConnector.getResponseFromAPI(NBPURL);
 
@@ -56,6 +90,12 @@ public class USDRateServiceImpl implements USDRateService {
 			return true;
 		}
 		return false;
+	}
+
+	private long calculateDatesDuration(String startDate, String endDate) {
+		LocalDate dateFrom = LocalDate.parse(startDate);
+		LocalDate dateTo = LocalDate.parse(endDate);
+		return Duration.between(dateFrom.atTime(0, 0), dateTo.atTime(0, 0)).toDays();
 	}
 
 	@Override
