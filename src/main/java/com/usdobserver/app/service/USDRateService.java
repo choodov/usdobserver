@@ -12,7 +12,9 @@ public interface USDRateService {
 
 	List<USDRate> getAllRates();
 
-	void updateDBFromAPI(String startDate, String endDate);
+	List<USDRate> getRatesByPeriod(String dateFrom, String dateTo);
+
+	boolean updateDBFromAPI(String startDate, String endDate);
 
 	Long countTotalRates();
 

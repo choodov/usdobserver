@@ -36,19 +36,26 @@ public class USDRateServiceImpl implements USDRateService {
 	}
 
 	@Override
-	public void updateDBFromAPI(String startDate, String endDate) {
+	public List<USDRate> getRatesByPeriod(String dateFrom, String dateTo) {
+		return usdRateRepository.findByDateGreaterThanEqualAndDateLessThanEqual(dateFrom, dateTo);
+	}
+
+	@Override
+	public boolean updateDBFromAPI(String startDate, String endDate) {
 		logger.info("NBP API dates range: From " + startDate + " to " + endDate);
 
 		String NBPURL = apiConnector.constructNBPURL(startDate, endDate);
 		Optional<String> response = apiConnector.getResponseFromAPI(NBPURL);
-		logger.info("NBP response: " + response.get());
 
 		if (response.isPresent()) {
+			logger.info("NBP response: " + response.get());
 			List<USDRate> USDRateList = xmlParser.getNBPRates(response.get());
 			List<USDRate> savedUSDRateList = usdRateRepository.save(USDRateList);
 			usdRateRepository.flush();
 			logger.info("List of saved USDRates: " + savedUSDRateList);
+			return true;
 		}
+		return false;
 	}
 
 	@Override

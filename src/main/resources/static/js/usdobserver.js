@@ -1,9 +1,10 @@
 /**
- * Created by wonder on 6/5/2017.
+ * Created by Chudov A.V. on 6/5/2017.
  */
 $(document).ready(function () {
 
     $("#date-from, #date-to").datepicker({
+        maxDate: '-1',
         inline: true,
         dateFormat: "yy-mm-dd"
     }).datepicker("setDate", new Date());
@@ -77,6 +78,42 @@ $(document).ready(function () {
     });
 
     $('#download-rates').on('click', function () {
-        alert("downloading rates...")
+        var dateFrom = $("#date-from").val();
+        var dateTo = $("#date-to").val();
+        updateDB(dateFrom, dateTo);
     });
 });
+
+function getRatesByPeriod(dateFrom, dateTo) {
+    return $.ajax({
+        type: "GET",
+        async: false,
+        dataType: "json",
+        url: "/api/rates/getRatesByPeriod?from=" + dateFrom + "&to=" + dateTo,
+        success: function (JsonData) {
+            return JsonData;
+        }
+    }).responseText;
+}
+
+function updateChart(dateFrom, dateTo) {
+    var JsonData = getRatesByPeriod(dateFrom, dateTo);
+    $.each(JSON.parse(JsonData), function (index, data) {
+        console.log("index: " + index + " data: " + data.date + "; " + data.rate);
+    });
+
+}
+function updateTable(dateFrom, dateTo) {
+    alert("table updated!");
+}
+
+function updateDB(dateFrom, dateTo) {
+    $.ajax({
+        type: "POST",
+        url: "/api/rates/updateDB?from=" + dateFrom + "&to=" + dateTo,
+        success: function () {
+            updateChart(dateFrom, dateTo);
+            updateTable(dateFrom, dateTo);
+        }
+    });
+}

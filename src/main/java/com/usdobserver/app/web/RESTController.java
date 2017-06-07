@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * Created by Chudov A.V. on 6/5/2017.
@@ -31,6 +32,7 @@ public class RESTController {
 	private XLSGenerator xlsGenerator;
 
 	private static final String XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	private static final String PRODUCERS_JSON = "application/json";
 
 	@RequestMapping(value = "/getAjax", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseEntity<DataTablesRenderDTO> getRates(DataTablesSettingsDTO settings, HttpServletRequest request) {
@@ -67,5 +69,23 @@ public class RESTController {
 		headers.setContentDispositionFormData(fileName, fileName);
 
 		return new ResponseEntity<>(data, headers, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/updateDB", method = RequestMethod.POST)
+	public ResponseEntity<String> updateDB(@RequestParam("from") String dateFrom,
+										   @RequestParam("to") String dateTo) {
+
+		Boolean result = usdRateService.updateDBFromAPI(dateFrom, dateTo);
+		return (result) ? new ResponseEntity<>("DB updated", HttpStatus.OK) :
+				new ResponseEntity<>("Cannot update DB", HttpStatus.NO_CONTENT);
+	}
+
+	@RequestMapping(value = "/getRatesByPeriod", method = RequestMethod.GET, produces = PRODUCERS_JSON)
+	public ResponseEntity<List<USDRate>> getRatesByPeriod(@RequestParam("from") String dateFrom,
+														  @RequestParam("to") String dateTo) {
+
+		List<USDRate> usdRateList = usdRateService.getRatesByPeriod(dateFrom, dateTo);
+
+		return new ResponseEntity<>(usdRateList, HttpStatus.OK);
 	}
 }
