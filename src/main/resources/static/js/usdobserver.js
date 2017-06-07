@@ -19,6 +19,7 @@ $(document).ready(function () {
 
     $("#date-to").datepicker({
         maxDate: '-1',
+        minDate: $("#date-from").val(),
         inline: true,
         dateFormat: "yy-mm-dd"
     }).datepicker("setDate", new Date());
@@ -80,7 +81,22 @@ $(document).ready(function () {
         updateDB(getDateFrom(), getDateTo());
     });
 
-    $("#date-from, #date-to").on('change', function () {
+    $("#date-from").on('change', function () {
+        var dateFrom = $("#date-from").val();
+        var newDateTo = new Date(dateFrom);
+        newDateTo.setDate(newDateTo.getDate() + 1);
+
+        $("#date-to").datepicker('option', 'minDate', newDateTo);
+        updateChart(getDateFrom(), getDateTo());
+        updateTable(getDateFrom(), getDateTo());
+    });
+
+    $("#date-to").on('change', function () {
+        var dateTo = $("#date-to").val();
+        var newDateFrom = new Date(dateTo);
+        newDateFrom.setDate(newDateFrom.getDate() - 1);
+
+        $("#date-from").datepicker('option', 'maxDate', newDateFrom);
         updateChart(getDateFrom(), getDateTo());
         updateTable(getDateFrom(), getDateTo());
     });
