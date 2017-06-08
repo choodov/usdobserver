@@ -29,7 +29,7 @@ public class APIConnector {
 	public Optional<String> getResponseFromAPI(String URL) {
 		Response response;
 		Optional<String> body;
-		long startTime, endTime, processResponseTime;
+		long startTime, endTime;
 
 		Request request = new Request.Builder().url(URL).get().build();
 
@@ -41,9 +41,8 @@ public class APIConnector {
 
 			if (response.code() == STATUS_OK) {
 				body = Optional.of(response.body().string());
-				processResponseTime = endTime - startTime;
 				logger.info("Time to process API response in milliseconds: "
-						+ TimeUnit.MILLISECONDS.convert(processResponseTime, TimeUnit.NANOSECONDS));
+						+ TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS));
 			} else {
 				logger.error("Response was with error: " + response.code());
 				return Optional.empty();

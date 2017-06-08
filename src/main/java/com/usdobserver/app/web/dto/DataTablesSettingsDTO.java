@@ -30,28 +30,36 @@ public class DataTablesSettingsDTO {
 	private Integer iSortingCols;
 	private String sEcho;
 
+	private static final String KEY_SEARCHABLE = "bSearchable_";
+	private static final String KEY_SEARCH = "sSearch_";
+	private static final String KEY_REGEX = "bRegex_";
+	private static final String KEY_SORTABLE = "bSortable_";
+	private static final String KEY_DATA_PROP = "mDataProp_";
+	private static final String KEY_SORT_COL = "iSortCol_";
+	private static final String KEY_SORT_DIR = "sSortDir_";
+
 	public void populateColumnData(HttpServletRequest request) {
 
 		if (iColumns == null) return;
 
 		for (int i = 0; i < iColumns; i++) {
 			columnSettings.add(new ColumnSettings(
-					Boolean.valueOf(request.getParameter("bSearchable_" + i)),
-					request.getParameter("sSearch_" + i),
-					Boolean.valueOf(request.getParameter("bRegex_" + i)),
-					Boolean.valueOf(request.getParameter("bSortable_" + i)),
-					request.getParameter("mDataProp_" + i)
+					Boolean.valueOf(request.getParameter(KEY_SEARCHABLE + i)),
+					request.getParameter(KEY_SEARCH + i),
+					Boolean.valueOf(request.getParameter(KEY_REGEX + i)),
+					Boolean.valueOf(request.getParameter(KEY_SORTABLE + i)),
+					request.getParameter(KEY_DATA_PROP + i)
 			));
 		}
 
 		if (iSortingCols == null) return;
 
 		for (Integer i = 0; i < iSortingCols; i++) {
-			Integer sortCol = Integer.valueOf(request.getParameter("iSortCol_" + i));
+			Integer sortCol = Integer.valueOf(request.getParameter(KEY_SORT_COL + i));
 			sortSettings.add(new SortSettings(
 					sortCol,
-					Sort.Direction.fromString(request.getParameter("sSortDir_" + i)),
-					request.getParameter("mDataProp_" + sortCol)
+					Sort.Direction.fromString(request.getParameter(KEY_SORT_DIR + i)),
+					request.getParameter(KEY_DATA_PROP + sortCol)
 			));
 		}
 	}

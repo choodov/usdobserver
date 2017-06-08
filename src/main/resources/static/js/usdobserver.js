@@ -5,6 +5,8 @@
 var ratesChart;
 var table;
 var ratesCounter = 0;
+var dateFrom = $("#date-from");
+var dateTo = $("#date-to");
 
 $(document).ready(function () {
 
@@ -23,7 +25,7 @@ $(document).ready(function () {
         loader.hide();
     });
 
-    $("#date-from").datepicker({
+    dateFrom.datepicker({
         changeMonth: true,
         changeYear: true,
         maxDate: '-2',
@@ -31,11 +33,11 @@ $(document).ready(function () {
         dateFormat: "yy-mm-dd"
     }).datepicker("setDate", oneWeekAgo);
 
-    $("#date-to").datepicker({
+    dateTo.datepicker({
         changeMonth: true,
         changeYear: true,
         maxDate: '-1',
-        minDate: $("#date-from").val(),
+        minDate: dateFrom.val(),
         inline: true,
         dateFormat: "yy-mm-dd"
     }).datepicker("setDate", new Date());
@@ -97,22 +99,22 @@ $(document).ready(function () {
         updateDB(getDateFrom(), getDateTo());
     });
 
-    $("#date-from").on('change', function () {
-        var dateFrom = $("#date-from").val();
-        var newDateTo = new Date(dateFrom);
+    dateFrom.on('change', function () {
+        var oldDateFrom = dateFrom.val();
+        var newDateTo = new Date(oldDateFrom);
         newDateTo.setDate(newDateTo.getDate() + 1);
 
-        $("#date-to").datepicker('option', 'minDate', newDateTo);
+        dateTo.datepicker('option', 'minDate', newDateTo);
         updateChart(getDateFrom(), getDateTo());
         updateTable(getDateFrom(), getDateTo());
     });
 
-    $("#date-to").on('change', function () {
-        var dateTo = $("#date-to").val();
-        var newDateFrom = new Date(dateTo);
+    dateTo.on('change', function () {
+        var oldDateTo = dateTo.val();
+        var newDateFrom = new Date(oldDateTo);
         newDateFrom.setDate(newDateFrom.getDate() - 1);
 
-        $("#date-from").datepicker('option', 'maxDate', newDateFrom);
+        dateFrom.datepicker('option', 'maxDate', newDateFrom);
         updateChart(getDateFrom(), getDateTo());
         updateTable(getDateFrom(), getDateTo());
     });
@@ -121,11 +123,11 @@ $(document).ready(function () {
 });
 
 function getDateFrom() {
-    return $("#date-from").val();
+    return dateFrom.val();
 }
 
 function getDateTo() {
-    return $("#date-to").val();
+    return dateTo.val();
 }
 
 function getRatesByPeriod(dateFrom, dateTo) {

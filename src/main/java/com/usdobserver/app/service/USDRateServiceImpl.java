@@ -55,20 +55,24 @@ public class USDRateServiceImpl implements USDRateService {
 		if (datesDuration <= MAX_DURATION) {
 			return updateDB(startDate, endDate);
 		} else {
-			String newEndDate;
-			do {
-				datesDuration = datesDuration - MAX_DURATION;
-				newEndDate = increaseDateTo(endDate, MAX_DURATION);
-				if (datesDuration > MAX_DURATION) {
-					updateDB(newEndDate, endDate);
-				} else {
-					updateDB(startDate, newEndDate);
-				}
-				endDate = newEndDate;
-			} while (datesDuration > MAX_DURATION);
-
-			return true;
+			return updateBigRange(datesDuration, startDate, endDate);
 		}
+	}
+
+	private boolean updateBigRange(long datesDuration, String startDate, String endDate) {
+		String newEndDate;
+		boolean result;
+		do {
+			datesDuration = datesDuration - MAX_DURATION;
+			newEndDate = increaseDateTo(endDate, MAX_DURATION);
+			if (datesDuration > MAX_DURATION) {
+				result = updateDB(newEndDate, endDate);
+			} else {
+				result = updateDB(startDate, newEndDate);
+			}
+			endDate = newEndDate;
+		} while (datesDuration > MAX_DURATION);
+		return result;
 	}
 
 	private String increaseDateTo(String date, long duration) {
