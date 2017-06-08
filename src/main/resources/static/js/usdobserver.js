@@ -11,6 +11,16 @@ $(document).ready(function () {
     var oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
+    var loader = $('body').loadingIndicator({
+        useImage: false,
+    }).data("loadingIndicator");
+
+    $( document ).ajaxStart(function() {
+        loader.show();
+    }).ajaxStop(function() {
+        loader.hide();
+    });
+
     $("#date-from").datepicker({
         changeMonth: true,
         changeYear: true,
