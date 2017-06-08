@@ -12,12 +12,14 @@ $(document).ready(function () {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     var loader = $('body').loadingIndicator({
-        useImage: false,
+        useImage: false
     }).data("loadingIndicator");
 
-    $( document ).ajaxStart(function() {
+    $(document).ajaxStart(function () {
         loader.show();
-    }).ajaxStop(function() {
+    }).ajaxStop(function () {
+        loader.hide();
+    }).ajaxError(function () {
         loader.hide();
     });
 
@@ -154,8 +156,9 @@ function updateChart(dateFrom, dateTo) {
     ratesChart.config.data.datasets[0].data = newChartData;
     ratesChart.update();
 }
+
 function updateTable(dateFrom, dateTo) {
-    if(table != null) {
+    if (table != null) {
         table.fnDestroy();
     }
 
@@ -168,6 +171,7 @@ function updateTable(dateFrom, dateTo) {
             {"data": "date"},
             {"data": "rate"}
         ],
+        rowGroup: {dataSrc: 'rate'},
         "bProcessing": true,
         bServerSide: true,
         sAjaxSource: "/api/rates/updateTable?from=" + dateFrom + "&to=" + dateTo,
